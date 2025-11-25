@@ -1,0 +1,40 @@
+<html>
+<head>
+    <title>Dataset Chatbot</title>
+</head>
+<body>
+    <h2>Chatbot</h2>
+
+    <div id="chatbox" style="width:100%;height:300px;border:1px solid #ccc;padding:10px;overflow-y:auto;"></div><br>
+
+    <input id="userInput" placeholder="Type your message..." style="width:80%;padding:8px;">
+    <button onclick="sendMessage()">Send</button>
+
+    <script>
+        function sendMessage() {
+            let input = document.getElementById("userInput");
+            let msg = input.value.trim();
+            if (msg === "") return;  // Prevent empty messages
+
+            addMessage("You", msg);
+
+            fetch("/chat", {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({ message: msg })
+            })
+            .then(res => res.json())
+            .then(data => {
+                addMessage("Bot", data.response);
+                input.value = "";
+            });
+        }
+
+        function addMessage(sender, text) {
+            const chatbox = document.getElementById("chatbox");
+            chatbox.innerHTML += `<b>${sender}:</b> ${text}<br>`;
+            chatbox.scrollTop = chatbox.scrollHeight; // auto-scroll
+        }
+    </script>
+</body>
+</html>
